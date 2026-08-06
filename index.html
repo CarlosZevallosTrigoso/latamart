@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>arte latinoamericano — mapeo de casos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+<style>
+  :root {
+    --verde: #5a7a3a;
+    --verde-claro: #eef2e8;
+    --gris: #666;
+    --gris-claro: #e5e5e5;
+    --texto: #1a1a1a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body {
+    font-family: 'Fira Code', monospace;
+    background: #ffffff;
+    color: var(--texto);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  .contenedor { max-width: 760px; margin: 0 auto; padding: 40px 20px 80px; }
+
+  /* cabecera */
+  header { margin-bottom: 40px; }
+  header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--verde);
+    text-transform: lowercase;
+  }
+  header p.sub {
+    color: var(--gris);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .progreso {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--gris);
+  }
+  .barra {
+    height: 4px;
+    background: var(--gris-claro);
+    margin-top: 6px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .barra > div {
+    height: 100%;
+    background: var(--verde);
+    width: 0%;
+    transition: width .4s ease;
+  }
+
+  /* índice */
+  .modulo { margin-bottom: 28px; }
+  .modulo h2 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--verde);
+    text-transform: lowercase;
+    border-bottom: 1px solid var(--gris-claro);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  .item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--texto);
+  }
+  .item .codigo {
+    color: var(--verde);
+    font-weight: 500;
+    font-size: 13px;
+    min-width: 46px;
+  }
+  .item .titulo { font-size: 14px; flex: 1; }
+  .item .estado { font-size: 12px; color: var(--gris); }
+  .item.disponible { cursor: pointer; }
+  .item.disponible:hover { background: var(--verde-claro); }
+  .item.disponible .estado { color: var(--verde); }
+  .item.pendiente { opacity: .45; cursor: default; }
+  .item:focus-visible { outline: 2px solid var(--verde); outline-offset: 2px; }
+
+  /* vista ficha */
+  #vista-ficha { display: none; }
+  .volver {
+    display: inline-block;
+    color: var(--verde);
+    text-decoration: none;
+    font-size: 13px;
+    margin-bottom: 24px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 4px 0;
+  }
+  .volver:hover { text-decoration: underline; }
+  .navegacion {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--gris-claro);
+    font-size: 13px;
+  }
+  .navegacion a {
+    color: var(--verde);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .navegacion a:hover { text-decoration: underline; }
+
+  /* contenido markdown */
+  #contenido h1 {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--verde);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  #contenido h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--verde);
+    text-transform: lowercase;
+    margin: 28px 0 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--gris-claro);
+  }
+  #contenido h3 { font-size: 14px; font-weight: 600; margin: 20px 0 8px; }
+  #contenido p { margin-bottom: 14px; }
+  #contenido em { font-style: italic; }
+  #contenido ul, #contenido ol { margin: 0 0 14px 22px; }
+  #contenido li { margin-bottom: 6px; }
+  #contenido blockquote {
+    border-left: 3px solid var(--verde);
+    padding: 4px 0 4px 16px;
+    color: var(--gris);
+    margin-bottom: 14px;
+  }
+  #contenido a { color: var(--verde); }
+  #contenido code {
+    background: var(--verde-claro);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 13px;
+  }
+  #contenido hr { border: none; border-top: 1px solid var(--gris-claro); margin: 24px 0; }
+  #contenido img { max-width: 100%; height: auto; }
+
+  .aviso {
+    color: var(--gris);
+    font-size: 13px;
+    padding: 20px;
+    background: var(--verde-claro);
+    border-radius: 4px;
+  }
+  footer {
+    margin-top: 60px;
+    padding-top: 16px;
+    border-top: 1px solid var(--gris-claro);
+    font-size: 12px;
+    color: var(--gris);
+  }
+</style>
+</head>
+<body>
+<div class="contenedor">
+
+  <header>
+    <h1>arte latinoamericano</h1>
+    <p class="sub">mapeo de casos de estudio · fichas de 1500 palabras</p>
+    <div class="progreso">
+      <span id="texto-progreso">cargando…</span>
+      <div class="barra"><div id="barra-progreso"></div></div>
+    </div>
+  </header>
+
+  <main>
+    <div id="vista-indice"></div>
+
+    <div id="vista-ficha">
+      <button class="volver" onclick="location.hash=''">&larr; índice</button>
+      <div id="contenido"></div>
+      <div class="navegacion">
+        <a id="nav-prev"></a>
+        <a id="nav-next"></a>
+      </div>
+    </div>
+  </main>
+
+  <footer>curso en construcción · las fichas se agregan progresivamente</footer>
+</div>
+
+<script>
+// ————————————————————————————————————————————
+// tabla de contenido
+// para agregar una ficha: subir fichas/CODIGO.md al repo. nada más.
+// ————————————————————————————————————————————
+const CURSO = [
+  { modulo: "m1 — vanguardias y modernismos (1920s–40s)", items: [
+    ["M1.1", "antropofagia brasileña"],
+    ["M1.2", "muralismo mexicano (+ tamayo como contracara)"],
+    ["M1.3", "universalismo constructivo (torres garcía)"],
+    ["M1.4", "indigenismo peruano y sus críticos"],
+  ]},
+  { modulo: "m2 — abstracción y geometrías (1940s–60s)", items: [
+    ["M2.1", "madí y concreto-invención"],
+    ["M2.2", "concretismo y neoconcretismo brasileño"],
+    ["M2.3", "cinetismo venezolano"],
+  ]},
+  { modulo: "m3 — conceptualismo político (1960s–70s)", items: [
+    ["M3.1", "tucumán arde"],
+    ["M3.2", "grupos mexicanos (proceso pentágono, no grupo, suma)"],
+    ["M3.3", "cildo meireles / inserções em circuitos ideológicos"],
+    ["M3.4", "camnitzer y el conceptualismo como categoría"],
+  ]},
+  { modulo: "m4 — arte bajo dictadura (1970s–80s)", items: [
+    ["M4.1", "cada y la escena de avanzada chilena"],
+    ["M4.2", "el siluetazo"],
+    ["M4.3", "brasil: antonio manuel, artur barrio"],
+  ]},
+  { modulo: "m5 — cuerpo, género, violencia", items: [
+    ["M5.1", "ana mendieta"],
+    ["M5.2", "regina josé galindo"],
+    ["M5.3", "teresa margolles"],
+    ["M5.4", "grupo chaclacayo"],
+  ]},
+  { modulo: "m6 — archivo, memoria, documento", items: [
+    ["M6.1", "fernando bryce"],
+    ["M6.2", "voluspa jarpa"],
+    ["M6.3", "rosângela rennó"],
+    ["M6.4", "doris salcedo (y sus críticas)"],
+  ]},
+  { modulo: "m7 — el caso peruano transversal", items: [
+    ["M7.1", "eielson"],
+    ["M7.2", "e.p.s. huayco"],
+    ["M7.3", "museo itinerante arte por la memoria"],
+    ["M7.4", "yuyanapaq"],
+    ["M7.5", "el ojo que llora"],
+  ]},
+  { modulo: "m8 — debates transversales", items: [
+    ["M8.1", "¿existe el «arte latinoamericano»? (ramírez vs. mosquera)"],
+    ["M8.2", "bienales y mercado"],
+  ]},
+];
+
+const RUTA_FICHAS = "fichas/";
+const disponibles = new Set();
+const planos = CURSO.flatMap(m => m.items); // [codigo, titulo] en orden
+
+// detecta qué fichas existen en el repo
+async function detectarFichas() {
+  const chequeos = planos.map(async ([codigo]) => {
+    try {
+      const r = await fetch(RUTA_FICHAS + codigo + ".md", { method: "HEAD" });
+      if (r.ok) disponibles.add(codigo);
+    } catch (e) { /* no disponible */ }
+  });
+  await Promise.all(chequeos);
+}
+
+function pintarIndice() {
+  const cont = document.getElementById("vista-indice");
+  cont.innerHTML = CURSO.map(m => `
+    <section class="modulo">
+      <h2>${m.modulo}</h2>
+      ${m.items.map(([codigo, titulo]) => {
+        const ok = disponibles.has(codigo);
+        return ok
+          ? `<a class="item disponible" href="#${codigo}">
+               <span class="codigo">${codigo}</span>
+               <span class="titulo">${titulo}</span>
+               <span class="estado">leer &rarr;</span>
+             </a>`
+          : `<div class="item pendiente">
+               <span class="codigo">${codigo}</span>
+               <span class="titulo">${titulo}</span>
+               <span class="estado">pendiente</span>
+             </div>`;
+      }).join("")}
+    </section>
+  `).join("");
+
+  const n = disponibles.size, total = planos.length;
+  document.getElementById("texto-progreso").textContent =
+    `${n} de ${total} fichas disponibles`;
+  document.getElementById("barra-progreso").style.width =
+    (total ? (100 * n / total) : 0) + "%";
+}
+
+async function pintarFicha(codigo) {
+  const contenido = document.getElementById("contenido");
+  const entrada = planos.find(([c]) => c === codigo);
+  if (!entrada) { location.hash = ""; return; }
+
+  try {
+    const r = await fetch(RUTA_FICHAS + codigo + ".md");
+    if (!r.ok) throw new Error();
+    const md = await r.text();
+    contenido.innerHTML = marked.parse(md);
+  } catch (e) {
+    contenido.innerHTML =
+      `<div class="aviso">la ficha <strong>${codigo}</strong> todavía no está disponible.</div>`;
+  }
+
+  // navegación prev/next solo entre fichas disponibles
+  const idx = planos.findIndex(([c]) => c === codigo);
+  const prev = planos.slice(0, idx).reverse().find(([c]) => disponibles.has(c));
+  const next = planos.slice(idx + 1).find(([c]) => disponibles.has(c));
+  const elPrev = document.getElementById("nav-prev");
+  const elNext = document.getElementById("nav-next");
+  elPrev.innerHTML = prev ? `&larr; ${prev[0]}` : "";
+  elPrev.href = prev ? "#" + prev[0] : "#";
+  elNext.innerHTML = next ? `${next[0]} &rarr;` : "";
+  elNext.href = next ? "#" + next[0] : "#";
+
+  window.scrollTo(0, 0);
+}
+
+function enrutar() {
+  const codigo = location.hash.replace("#", "").trim();
+  const esFicha = codigo && planos.some(([c]) => c === codigo);
+  document.getElementById("vista-indice").style.display = esFicha ? "none" : "block";
+  document.getElementById("vista-ficha").style.display = esFicha ? "block" : "none";
+  if (esFicha) pintarFicha(codigo);
+}
+
+window.addEventListener("hashchange", enrutar);
+
+(async () => {
+  await detectarFichas();
+  pintarIndice();
+  enrutar();
+})();
+</script>
+</body>
+</html>
